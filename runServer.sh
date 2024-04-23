@@ -1,2 +1,2 @@
 #!/bin/bash
-php -S localhost:3000 -t visitScheduling
+php -S localhost:3000 -t projectMain

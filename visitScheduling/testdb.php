@@ -1,5 +1,5 @@
 <?php
-
+  // code to test database connection is working
   require("../lib/initdb.php");
 
   $query = "SELECT * from COMPANY";
@@ -8,5 +8,6 @@
     $row=mysqli_fetch_assoc($result);
     echo $row["Name"];
   }
+  
   mysqli_close($connection);
 ?>

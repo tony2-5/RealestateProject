@@ -1,5 +1,6 @@
 <?php
 
+//getting my database from .env file to keep hidden
 $env = parse_ini_file('.env');
 $db_pass = $env["DB_PASS"];
 $db_user="ajd99";
