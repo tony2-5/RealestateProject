@@ -1,3 +1,7 @@
-.dropdownTD {
-  width:15vw;
+.chosen-container-single .chosen-single {
+  height: calc(2.25rem + 2px) !important;
+}
+#customerDiv {
+  display:flex;
+  flex-direction: column;
 }
