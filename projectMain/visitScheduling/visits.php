@@ -1,5 +1,18 @@
 <?php
+// using sessions to transfer sensitive data between pages
 require_once('../../lib/nav.php');
+// check if scheduling succes or failed
+if(isset($_GET["message"])) {
+if($_GET["message"]=="success") {
+    echo "<div class='alert alert-success' role='alert'>
+        Scheduling Success!
+    </div>";
+} elseif($_GET["message"]=="fail") {
+    echo "<div class='alert alert-danger' role='alert'>
+        Scheduling failed.
+    </div>";
+}
+}
 ?>
 <link rel="stylesheet" href="./style.css">
 <div class="container">
@@ -21,8 +34,10 @@ require_once('../../lib/nav.php');
                                             $query = "SELECT Name,Customer_SSN FROM CUSTOMER";
                                             $result = mysqli_query($connection,$query);
                                             while($row=mysqli_fetch_assoc($result)) {
+                                                // encrypting ssn for security
+                                                $ssn=encrypt($encryptionKey,$row["Customer_SSN"]);
                                                 // echo name and last 4 ssn digits
-                                                echo "<option value=$row[Customer_SSN]>$row[Name] *****".substr($row["Customer_SSN"],5)."</option>";
+                                                echo "<option value=$ssn>$row[Name] *****".substr($row["Customer_SSN"],5)."</option>";
                                             }
                                           ?>
                                         </select>

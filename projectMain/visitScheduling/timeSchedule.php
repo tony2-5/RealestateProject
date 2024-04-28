@@ -1,45 +1,41 @@
 <?php
+// sessions to hold ssn, address, and date so data is preserved when time form is submitted
+session_start();
 require_once('../../lib/nav.php');
 ?>
 <?php
+
+if (isset($_POST['customer'])) {
+  $ssn = decrypt($encryptionKey,$_POST["customer"]);
+  $_SESSION["ssn"] = $ssn;
+  $_SESSION["address"] = $_POST["address"];
+  $_SESSION["date"] = $_POST["date"];
+}
   #functionality for when submit button pressed
-  if(isset($_POST['submitButton'])) { 
-      $stmt = mysqli_prepare($connection,"INSERT INTO VISITS VALUES(?,?,?,?)");
-      mysqli_stmt_bind_param($stmt,"ssss",$_POST["customer"],$_POST["address"],$_POST["date"],$_POST["time"]);
-      if(mysqli_stmt_execute($stmt)) {
-        echo "Appointment Scheduled!";
-      } else {
-        echo "Failed!";
-      }
-  } 
+if(isset($_POST['submitButton'])) { 
+    $stmt = mysqli_prepare($connection,"INSERT INTO VISITS VALUES(?,?,?,?)");
+    mysqli_stmt_bind_param($stmt,"ssss",$_SESSION["ssn"], $_SESSION["address"], $_SESSION["date"],$_POST["time"]);
+    session_unset();
+    session_destroy();
+    if(mysqli_stmt_execute($stmt)) {
+      header("Location: visits.php?message=success");
+    } else {
+      header("Location: visits.php?message=fail");
+    }
+} 
 ?>
 <form method="post">
   <?php
-  /*
-    echo $_POST["address"];
-    echo "<br>";
-    echo $_POST["customer"];
-    echo "<br>";
-    echo $_POST["date"];
-    echo "<br>";
-    */
+    $stmt = mysqli_prepare($connection,"SELECT time FROM VISITS WHERE date = ?");
+    mysqli_stmt_bind_param($stmt,"s",$_SESSION["date"]);
+    mysqli_stmt_execute($stmt); 
+    $result = mysqli_stmt_get_result($stmt);
+    # creating array of times that where already scheduled
+    $usedTimesArray=array();
+    while($row = mysqli_fetch_assoc($result)) {
+      array_push($usedTimesArray,$row["time"]);
+    } 
   ?>
-  <?php
-              $stmt = mysqli_prepare($connection,"SELECT time FROM VISITS WHERE date = ?");
-              mysqli_stmt_bind_param($stmt,"s",$_POST["date"]);
-              mysqli_stmt_execute($stmt); 
-              $result = mysqli_stmt_get_result($stmt);
-              # creating array of times that where already scheduled
-              $usedTimesArray=array();
-              while($row = mysqli_fetch_assoc($result)) {
-                array_push($usedTimesArray,$row["time"]);
-              } 
-              // if (in_array("08:00:00",$row)) { 
-              //   echo "found"; 
-              // } else {
-              //   echo "not found";
-              // }
-            ?>
   <div class="col-md-6">
     <div class="form-group">
         <label class="control-label" for="time">Available Times</label>
@@ -62,13 +58,11 @@ require_once('../../lib/nav.php');
         </select>
     </div>
   </div>
-  <!-- hidden fields to pass post data from previous page with next post request-->
-  <input type="hidden" name="date" id="hiddenField" value="<?php echo $_POST['date'] ?>" >
-  <input type="hidden" name="customer" id="hiddenField" value="<?php echo $_POST['customer'] ?>" >
-  <input type="hidden" name="address" id="hiddenField" value="<?php echo $_POST['address'] ?>" >
   <div class="col-md-12">
     <div class="form-group">
         <button type="submit" id="submitButton" name="submitButton" class="btn btn-default">Schedule!</button>
     </div>
   </div>
 </form>
+<?php
+?>
