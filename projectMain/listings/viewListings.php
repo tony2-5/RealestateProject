@@ -6,10 +6,10 @@ require_once('../../lib/nav.php');
 <table class="table">
   <thead>
     <tr>
-      <th scope="col">Date</th>
-      <th scope="col">Time</th>
-      <th scope="col">Name</th>
+      <th scope="col">Listing Date</th>
       <th scope="col">Address</th>
+      <th scope="col">Listing Agent</th>
+      <th scope="col">Asking Price</th>
     </tr>
   </thead>
   
