@@ -7,10 +7,11 @@ require_once('../../lib/nav.php');
   <thead>
     <tr>
       <th scope="col">Listing Date</th>
-      <th scope="col">Address</th>
+      <th scope="col">Property Address</th>
       <th scope="col">Listing Agent</th>
       <th scope="col">Asking Price</th>
     </tr>
   </thead>
+  
   
 </table>
