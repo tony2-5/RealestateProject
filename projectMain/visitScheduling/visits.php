@@ -80,10 +80,6 @@ if($_GET["message"]=="success") {
                 </div>
             </div>
         </div>
-        <!--jquery src to allow search for customer and property-->
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js"></script>
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.css" rel="stylesheet"/>
         <script>
             //jquery customer input search
             $("#customer").chosen();

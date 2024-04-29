@@ -8,17 +8,38 @@ if(isset($_POST["delete"])) {
   $stmt = mysqli_prepare($connection,"DELETE FROM VISITS WHERE Customer_SSN=? AND Full_address=? AND date=? AND time=?");
   mysqli_stmt_bind_param($stmt,"ssss",$decryptedssn, $_POST["address"], $_POST["date"],$_POST["time"]);
   if(mysqli_stmt_execute($stmt)) {
-  echo "<div class='alert alert-success' role='alert'>
+  echo "<div id='deleteSuccess' class='alert alert-success' role='alert'>
   Delete Success!
   </div>";
   } else {
-    echo "<div class='alert alert-danger' role='alert'>
+    echo "<div id='deleteFail' class='alert alert-danger' role='alert'>
     Delete Failed.
     </div>";
   }
 }
 ?>
+<script>
+  // jquery to check if success or fail message exists and to have it fade out
+  if ($("#deleteSuccess").length) {
+    $('#deleteSuccess').delay(5000).fadeOut(400)
+  } else if($("#deleteFail").length) {
+    $('#deleteFail').delay(5000).fadeOut(400)
+  }
+</script>
   <link rel="stylesheet" href="./style.css">
+  <form class="form-inline">
+    <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    <select class="form-control">
+      <option selected>Search Criteria</option>
+      <option value="aName">Agent name</option>
+      <option value="date">Date</option>
+      <option value="time">Time</option>
+      <option value="cName">Customer name</option>
+      <option value="address">Address</option>
+    </select>
+</div>
+  </form>
   <table class="table">
   <thead>
     <tr>
@@ -37,7 +58,7 @@ if(isset($_POST["delete"])) {
     echo "<tr>";
       echo "<td>$row[date]</td>";
       echo "<td>$row[time]</td>";
-
+      
       // get name from customer table
       $stmt = mysqli_prepare($connection,"SELECT Name FROM CUSTOMER WHERE Customer_SSN = ?");
       mysqli_stmt_bind_param($stmt,"s",$row["Customer_SSN"]);
