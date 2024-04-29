@@ -51,7 +51,7 @@ require_once('../../lib/nav.php');
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label class="control-label" for="price">Asking Price:</label>
-                                <input type="text" name="price"><br>
+                                <input type="text" name="price" required><br>
 
                             </div>
                         </div>
