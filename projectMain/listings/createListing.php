@@ -1,6 +1,18 @@
 <?php
 // using sessions to transfer sensitive data between pages
 require_once('../../lib/nav.php');
+// check if listing creation succeeded or failed
+if(isset($_GET["message"])) {
+    if($_GET["message"]=="success") {
+        echo "<div class='alert alert-success' role='alert'>
+            Listing Created!
+        </div>";
+    } elseif($_GET["message"]=="fail") {
+        echo "<div class='alert alert-danger' role='alert'>
+            Listing creation failed.
+        </div>";
+    }
+    }
 ?>
 <link rel="stylesheet" href="./style.css">
 <div class="container">
@@ -37,7 +49,7 @@ require_once('../../lib/nav.php');
                                 <label class="control-label" for="address">Property Address</label>
                                 <select id="address" name="address" class="form-control">
                                     <?php
-                                        $query = "SELECT Full_address FROM PROPERTY";
+                                        $query = "SELECT Full_address FROM PROPERTY WHERE Full_address NOT IN (SELECT Full_address FROM LISTING)";
                                         $result = mysqli_query($connection,$query);
                                         while($row=mysqli_fetch_assoc($result)) {
                                             // echo name and last 4 ssn digits
@@ -51,7 +63,7 @@ require_once('../../lib/nav.php');
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label class="control-label" for="price">Asking Price:</label>
-                                <input type="text" name="price" required><br>
+                                <input type="number" name="price" required><br>
 
                             </div>
                         </div>
