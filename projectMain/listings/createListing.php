@@ -1,18 +1,6 @@
 <?php
 // using sessions to transfer sensitive data between pages
 require_once('../../lib/nav.php');
-// check if scheduling succes or failed
-if(isset($_GET["message"])) {
-if($_GET["message"]=="success") {
-    echo "<div class='alert alert-success' role='alert'>
-        Scheduling Success!
-    </div>";
-} elseif($_GET["message"]=="fail") {
-    echo "<div class='alert alert-danger' role='alert'>
-        Scheduling failed.
-    </div>";
-}
-}
 ?>
 <link rel="stylesheet" href="./style.css">
 <div class="container">
@@ -20,37 +8,30 @@ if($_GET["message"]=="success") {
         <div class="col-md-6">
             <div class="well-block">
                 <div class="well-title">
-                    <h2>Book an Appointment</h2>
+                    <h2>Post a Property Listing</h2>
                 </div>
                 <!-- Redirect realtor to schedule time after selecting initial data-->
-                <form action="timeSchedule.php" method="post">
+                <form action="generateListing.php" method="post">
                     <!-- Form start -->
-                        <!-- Text input-->
+                        <!-- Agent input-->
                         <div class="col-md-6">
-                            <div class="form-group" id="customerDiv">
-                                <label class="control-label" for="customer">Customer</label>
-                                <select id="customer" name="customer" class="form-control">
+                            <div class="form-group" id="agentDiv">
+                                <label class="control-label" for="agent">Agent</label>
+                                <select id="agent" name="agent" class="form-control">
                                     <?php
-                                    $query = "SELECT Name,Customer_SSN FROM CUSTOMER";
+                                    $query = "SELECT Name,Agent_SSN FROM AGENT";
                                     $result = mysqli_query($connection,$query);
                                     while($row=mysqli_fetch_assoc($result)) {
                                         // encrypting ssn for security
-                                        $ssn=encrypt($encryptionKey,$row["Customer_SSN"]);
+                                        $ssn=encrypt($encryptionKey,$row["Agent_SSN"]);
                                         // echo name and last 4 ssn digits
-                                        echo "<option value=$ssn>$row[Name] *****".substr($row["Customer_SSN"],5)."</option>";
+                                        echo "<option value=$ssn>$row[Name] *****".substr($row["Agent_SSN"],5)."</option>";
                                     }
                                     ?>
                                 </select>
                             </div>
                         </div>
-                        <!-- Text input-->
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="control-label" for="date">Date</label>
-                                <input id="date" name="date" type="date" placeholder="Preferred Date" class="form-control input-md" required>
-                            </div>
-                        </div>
-                        <!-- Select Basic -->
+                        <!-- Select Property Address-->
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label class="control-label" for="address">Property Address</label>
@@ -66,11 +47,19 @@ if($_GET["message"]=="success") {
                                 </select>
                             </div>
                         </div>
+                        <!-- Asking Price Text Input -->
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="control-label" for="price">Asking Price:</label>
+                                <input type="text" name="price" required><br>
+
+                            </div>
+                        </div>
                         <!-- Button -->
                         <div class="col-md-12">
                             <div class="form-group">
                                 <!-- Redirect to page where realtor can pick from available times on that date -->
-                                <button id="singlebutton" name="singlebutton" class="btn btn-default">Schedule time</button>
+                                <button id="singlebutton" name="submitButton" class="btn btn-default">Create Listing</button>
                             </div>
                         </div>
                     </div>
@@ -80,10 +69,3 @@ if($_GET["message"]=="success") {
         </div>
     </div>
 </div>
-        <script>
-            //jquery customer input search
-            $("#customer").chosen();
-            //jquery property input search
-            $("#address").chosen();
-        </script>
-
