@@ -38,9 +38,9 @@ if(isset($_POST["delete"])) {
       <option value="cName">Customer name</option>
       <option value="address">Address</option>
     </select>
-  </form>
 </div>
-<table class="table">
+  </form>
+  <table class="table">
   <thead>
     <tr>
       <th scope="col">Date</th>
@@ -93,3 +93,7 @@ if(isset($_POST["delete"])) {
    ?> 
   </tbody>
 </table>
+<?php
+  // functionality for deleting scheduled visits
+
+?>

@@ -27,12 +27,6 @@
             <a class="nav-link" href="/visitScheduling/scheduledVisits.php">Scheduled Visits</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/listings/createListing.php">Post Listing</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/listings/viewListings.php">View Listings</a>
-          </li>
-          <li class="nav-item">
             <a class="nav-link disabled" href="#">Fill in (disabled ex)</a>
           </li>
         </ul>
