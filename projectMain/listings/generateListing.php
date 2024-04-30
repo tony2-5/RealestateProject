@@ -20,8 +20,13 @@ if(isset($_POST['submitButton'])) {
     session_destroy();
     if(mysqli_stmt_execute($stmt)) {
       header("Location: createListing.php?message=success");
+      echo "<div id='deleteSuccess' class='alert alert-success' role='alert'>
+      Delete Success!</div>";
+  
     } else {
       header("Location: createListing.php?message=fail");
+      echo "<div id='deleteFail' class='alert alert-danger' role='alert'>
+      Delete Failed.</div>";
     }
 } 
 ?>
