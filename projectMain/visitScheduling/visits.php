@@ -80,10 +80,9 @@ if($_GET["message"]=="success") {
         </div>
     </div>
 </div>
-        <script>
-            //jquery customer input search
-            $("#customer").chosen();
-            //jquery property input search
-            $("#address").chosen();
-        </script>
+    //jquery customer input search
+    $("#customer").chosen();
+    //jquery property input search
+    $("#address").chosen();
+</script>
 
