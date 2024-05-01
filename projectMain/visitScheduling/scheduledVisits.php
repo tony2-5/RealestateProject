@@ -26,6 +26,7 @@ if(isset($_POST["delete"])) {
     $('#deleteFail').delay(5000).fadeOut(400)
   }
 </script>
+
   <link rel="stylesheet" href="./style.css">
   <form class="form-inline">
     <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
@@ -45,7 +46,8 @@ if(isset($_POST["delete"])) {
     <tr>
       <th scope="col">Date</th>
       <th scope="col">Time</th>
-      <th scope="col">Name</th>
+      <th scope="col">Customer Name</th>
+      <th scope="col">Agent Name</th>
       <th scope="col">Address</th>
     </tr>
   </thead>
@@ -59,6 +61,7 @@ if(isset($_POST["delete"])) {
       echo "<td>$row[date]</td>";
       echo "<td>$row[time]</td>";
       
+
       // get name from customer table
       $stmt = mysqli_prepare($connection,"SELECT Name FROM CUSTOMER WHERE Customer_SSN = ?");
       mysqli_stmt_bind_param($stmt,"s",$row["Customer_SSN"]);
@@ -67,8 +70,18 @@ if(isset($_POST["delete"])) {
       $customerName = mysqli_fetch_assoc($result2);
       echo "<td>$customerName[Name] *****".substr($row["Customer_SSN"],5)."</td>";
 
+      // get customers agent using Agent and AGENT_HELPS table
+      $stmt = mysqli_prepare($connection,"SELECT Agent_SSN,Name FROM AGENT WHERE Agent_SSN IN 
+      (SELECT Agent_SSN FROM AGENT_HELPS WHERE Customer_SSN=?)");
+      mysqli_stmt_bind_param($stmt,"s",$row["Customer_SSN"]);
+      mysqli_stmt_execute($stmt); 
+      $result3 = mysqli_stmt_get_result($stmt);
+      $agentNameSSN = mysqli_fetch_assoc($result3);
+      echo "<td>$agentNameSSN[Name] *****".substr($agentNameSSN["Agent_SSN"],5)."</td>";
+
       echo "<td>$row[Full_address]</td>";
-      //delete button
+
+      //delete button and functionality
       echo "<td>";
         echo "<form method='post' style='margin: 0;'>";
         echo "<div>";
@@ -88,6 +101,7 @@ if(isset($_POST["delete"])) {
         echo "</div>";
         echo "</form>";
       echo "</td>";
+
     echo "</tr>";
     }
    ?> 
