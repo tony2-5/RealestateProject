@@ -27,19 +27,20 @@ if(isset($_POST["delete"])) {
   }
 </script>
 
-  <link rel="stylesheet" href="./style.css">
-  <form class="form-inline">
-    <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-    <select class="form-control">
-      <option selected>Search Criteria</option>
-      <option value="aName">Agent name</option>
-      <option value="date">Date</option>
-      <option value="time">Time</option>
-      <option value="cName">Customer name</option>
-      <option value="address">Address</option>
-    </select>
-  </form>
+<link rel="stylesheet" href="./style.css">
+<!--drop down to change search criteria-->
+<form method='post' class="form-inline">
+  <input name="search" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+  <select name="searchCriteria" class="form-control">
+    <option selected disabled>Search Criteria</option>
+    <option value="aName">Agent name</option>
+    <option value="date">Date</option>
+    <option value="time">Time</option>
+    <option value="cName">Customer name</option>
+    <option value="Full_address">Address</option>
+  </select>
+  <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+</form>
 </div>
 <table class="table">
   <thead>
@@ -54,14 +55,43 @@ if(isset($_POST["delete"])) {
   <tbody>
     <?php
     //dynamically generate webpage
-    $query = "SELECT * FROM VISITS ORDER BY DATE DESC, TIME";
-    $result = mysqli_query($connection,$query);
+    if(isset($_POST['searchCriteria']) && ($_POST['searchCriteria']=='date'||$_POST['searchCriteria']=='time'||$_POST['searchCriteria']=='Full_address')) {
+      // search is used on the date, time, or address field
+      $searchString="%$_POST[search]%";
+      // concatenating search criteria instead of binding param because do not need to worry about sanitizing search criteria
+      $stmt = mysqli_prepare($connection,"SELECT * FROM VISITS WHERE ".$_POST['searchCriteria']." LIKE ? ORDER BY DATE DESC, TIME");
+      mysqli_stmt_bind_param($stmt,"s",$searchString);
+      mysqli_stmt_execute($stmt); 
+      $result = mysqli_stmt_get_result($stmt);
+    } else if(isset($_POST['searchCriteria']) && $_POST['searchCriteria']=='cName'){
+      //if search is used on customer name
+      $searchString="%$_POST[search]%";
+      // concatenating search criteria instead of binding param because do not need to worry about sanitizing search criteria
+      $stmt = mysqli_prepare($connection,"SELECT * FROM VISITS WHERE Customer_SSN IN 
+      (SELECT Customer_SSN FROM CUSTOMER WHERE NAME LIKE ?) ORDER BY DATE DESC, TIME");
+      mysqli_stmt_bind_param($stmt,"s",$searchString);
+      mysqli_stmt_execute($stmt); 
+      $result = mysqli_stmt_get_result($stmt);
+    } else if(isset($_POST['searchCriteria']) && $_POST['searchCriteria']=='aName'){
+      //if search is used on agent name
+      $searchString="%$_POST[search]%";
+      // concatenating search criteria instead of binding param because do not need to worry about sanitizing search criteria
+      $stmt = mysqli_prepare($connection,"SELECT * FROM VISITS WHERE Customer_SSN IN 
+      (SELECT Customer_SSN FROM AGENT_HELPS ah,AGENT a WHERE ah.Agent_SSN=a.Agent_SSN AND NAME LIKE ?) 
+      ORDER BY DATE DESC, TIME");
+      mysqli_stmt_bind_param($stmt,"s",$searchString);
+      mysqli_stmt_execute($stmt); 
+      $result = mysqli_stmt_get_result($stmt);
+    }else {
+      $query = "SELECT * FROM VISITS ORDER BY DATE DESC, TIME";
+      $result = mysqli_query($connection,$query);
+    }
+
     while($row=mysqli_fetch_assoc($result)) {
     echo "<tr>";
       echo "<td>$row[date]</td>";
       echo "<td>$row[time]</td>";
       
-
       // get name from customer table
       $stmt = mysqli_prepare($connection,"SELECT Name FROM CUSTOMER WHERE Customer_SSN = ?");
       mysqli_stmt_bind_param($stmt,"s",$row["Customer_SSN"]);
