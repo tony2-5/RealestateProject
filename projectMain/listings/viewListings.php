@@ -31,6 +31,18 @@ if(isset($_POST["delete"])) {
   }
 }
 ?>
+<script>
+  // jquery to check if success or fail message exists and to have it fade out
+  if ($("#deleteSuccess").length) {
+    $('#deleteSuccess').delay(5000).fadeOut(400)
+  } else if($("#deleteFail").length) {
+    $('#deleteFail').delay(5000).fadeOut(400)
+  } else if($("#updateSuccess").length) {
+    $('#updateSuccess').delay(5000).fadeOut(400)
+  } else if($("#updateFail").length) {
+    $('#updateFail').delay(5000).fadeOut(400)
+  } 
+</script>
 <link rel="stylesheet" href="./style.css">
 <table class="table">
   <thead>
