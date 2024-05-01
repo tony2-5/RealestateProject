@@ -81,3 +81,9 @@ if(isset($_GET["message"])) {
         </div>
     </div>
 </div>
+<script>
+    //jquery agent search
+    $("#agent").chosen();
+    //jquery property search
+    $("#address").chosen();
+</script>
