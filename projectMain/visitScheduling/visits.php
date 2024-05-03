@@ -25,7 +25,6 @@ if($_GET["message"]=="success") {
                 <!-- Redirect realtor to schedule time after selecting initial data-->
                 <form action="timeSchedule.php" method="post">
                     <!-- Form start -->
-                        <!-- Text input-->
                         <div class="col-md-6">
                             <div class="form-group" id="customerDiv">
                                 <label class="control-label" for="customer">Customer</label>

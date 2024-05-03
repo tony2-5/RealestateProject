@@ -33,7 +33,12 @@
           <li class="nav-item">
             <a class="nav-link" href="/visitScheduling/scheduledVisits.php">Scheduled Visits</a>
           </li>
-          
+          <li class="nav-item">
+            <a class="nav-link" href="/newAgentCustomer/newAgent.php">Add Agent</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/newAgentCustomer/newCustomer.php">Add Customer</a>
+          </li>
         </ul>
       </div>
       </nav>
