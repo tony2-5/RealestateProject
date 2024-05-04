@@ -4,10 +4,17 @@ session_start();
 require_once('../../lib/nav.php');
 ?>
 <?php
-if(isset($_GET["message"]) && $_GET["message"]=="overlapping") {
-  echo "<div class='alert alert-danger' role='alert'>
-     Cant schedule overlapping times!
-  </div>";
+if(isset($_GET["message"])) {
+  if($_GET["message"]=="overlapping") {
+    echo "<div class='alert alert-danger' role='alert'>
+      Cant schedule overlapping times!
+    </div>";
+  }
+  if($_GET["message"]=="sameCustomerOverlap") {
+    echo "<div class='alert alert-danger' role='alert'>
+      Same customer needs an additional 30 minutes between appointments!
+    </div>";
+  }
 }
 if (isset($_POST['customer'])) {
   $ssn = decrypt($encryptionKey,$_POST["customer"]);
@@ -20,25 +27,40 @@ if (isset($_POST['customer'])) {
 if(isset($_POST['submitButton'])) { 
     //var to keep track if overlap
     $overlap=false;
+    $sameCustomer=false;
     // issues setting up trigger for database using phpmyadmin so checking for no duplicates in the code
-    $stmt = mysqli_prepare($connection,"SELECT time FROM VISITS WHERE date = ? AND Full_address = ?");
+    $stmt = mysqli_prepare($connection,"SELECT * FROM VISITS WHERE date = ? AND Full_address = ?");
     mysqli_stmt_bind_param($stmt,"ss",$_SESSION["date"],$_SESSION["address"]);
     mysqli_stmt_execute($stmt); 
     $result = mysqli_stmt_get_result($stmt);
     // if exists tuples in table already
     if(mysqli_num_rows($result)) {
       while($row = mysqli_fetch_assoc($result)) {
-        // add 1 hour to scheduled time
-        $addHour=1*60*60;
+        //if same customer and agent need to ensure half hour gap
+        if($row["Customer_SSN"]==$_SESSION["ssn"]) {
+          // add 1 hour and half gap
+          $varTimeGap=1.5*60*60;
+          $sameCustomer=true;
+        } else {
+          // add 1 hour to scheduled time normally
+          $varTimeGap=1*60*60;
+        }
+        $timeGap=1*60*60;
         $startTime=strtotime($row["time"]);
-        $endTime=strtotime($row["time"])+$addHour;
+        $endTime=strtotime($row["time"]);
         $passedStartTime=strtotime($_POST["time"]);
-        $passedEndTime = strtotime($_POST["time"])+$addHour;
-        echo $passedStartTime." ".$passedEndTime;
+        $passedEndTime = strtotime($_POST["time"]);
         //check for no overlap
-        if(($startTime<$passedEndTime && $endTime>$passedStartTime)||($passedStartTime<$endTime && $passedEndTime>$startTime)) {
+        /*adding timegap to end times in if statement because can change if scheduling 
+        for the same customer with varTimeGap needed extra 30 minutes*/
+        if(($startTime<($passedEndTime+$timeGap) && $passedStartTime<($endTime+$varTimeGap))
+        ||($passedStartTime<($endTime+$timeGap) && $startTime<($passedEndTime+$varTimeGap))) {
           $overlap=true;
-          header("Location: timeSchedule.php?message=overlapping");
+          if($sameCustomer) {
+            header("Location: timeSchedule.php?message=sameCustomerOverlap");
+          } else {
+            header("Location: timeSchedule.php?message=overlapping");
+          }
         } 
       }
       if(!$overlap){
