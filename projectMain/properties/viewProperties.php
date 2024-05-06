@@ -16,9 +16,11 @@ if(isset($_GET['update'])) {
 
 // delete functionality
 if(isset($_POST["delete"])) {
-  $decryptedssn=decrypt($encryptionKey,$_POST["ssn"]);
-  $stmt = mysqli_prepare($connection,"DELETE FROM LISTING WHERE Agent_SSN=? AND list_date=? AND Full_address=? AND asking_price=?");
-  mysqli_stmt_bind_param($stmt,"ssss",$decryptedssn, $_POST["date"], $_POST["address"],$_POST["price"]);
+  $stmt = mysqli_prepare($connection,"DELETE FROM LISTING WHERE Full_address=?");
+  mysqli_stmt_bind_param($stmt,"s",$_POST["address"]);
+  mysqli_stmt_execute($stmt);
+  $stmt = mysqli_prepare($connection,"DELETE FROM PROPERTY WHERE Full_address=?");
+  mysqli_stmt_bind_param($stmt,"s",$_POST["address"]);
   if(mysqli_stmt_execute($stmt)) {
   echo "<div id='deleteSuccess' class='alert alert-success' role='alert'>
   Delete Success!
@@ -46,46 +48,44 @@ if(isset($_POST["delete"])) {
 <table class="table">
   <thead>
     <tr>
-      <th scope="col">Listing Date</th>
+      <th scope="col">Owner</th>
       <th scope="col">Property Address</th>
-      <th scope="col">Listing Agent</th>
-      <th scope="col">Asking Price</th>
+      <th scope="col">Tax</th>
+      <th scope="col">Full Baths</th>
+      <th scope="col">Half Baths</th>
+      <th scope="col">Bedrooms</th>
     </tr>
   </thead>
   <tbody>
     <?php
     //dynamically generate webpage
-    $query = "SELECT * FROM LISTING ORDER BY LIST_DATE DESC";
+    $query = "SELECT * FROM PROPERTY";
     $result = mysqli_query($connection,$query);
     while($row=mysqli_fetch_assoc($result)) {
     echo "<tr>";
-      echo "<td>$row[list_date]</td>";
-      echo "<td>$row[Full_address]</td>";
-      
       // get name from customer table
-      $stmt = mysqli_prepare($connection,"SELECT Name FROM AGENT WHERE Agent_SSN = ?");
-      mysqli_stmt_bind_param($stmt,"s",$row["Agent_SSN"]);
+      $stmt = mysqli_prepare($connection,"SELECT Name,Owner_SSN FROM OWNER WHERE Owner_SSN IN (SELECT Owner_SSN FROM OWNS WHERE Full_address=?)");
+      mysqli_stmt_bind_param($stmt,"s",$row["Full_address"]);
       mysqli_stmt_execute($stmt); 
       $result2 = mysqli_stmt_get_result($stmt);
-      $agentName = mysqli_fetch_assoc($result2);
-      echo "<td> $agentName[Name] *****".substr($row["Agent_SSN"],5)."</td>";
-
-      echo "<td>$" . number_format($row['asking_price'], 2, '.', ',') . "</td>";
+      $ownerIdentifiers = mysqli_fetch_assoc($result2);
+      echo "<td> $ownerIdentifiers[Name] *****".substr($ownerIdentifiers["Owner_SSN"],5)."</td>";
       
+      echo "<td>$row[Full_address]</td>";
+      echo "<td>$" . number_format($row["tax"], 2, '.', ',') . "</td>";
+      echo "<td>$row[Fullbath]</td>";
+      echo "<td>$row[Halfbath]</td>";
+      echo "<td>$row[Bedrooms]</td>";
       //delete and edit button
-      
       // Each row of table for listings
       echo "<td>";
         // Edit form
-        echo "<form method='post' action='editListing.php' style='display: inline; margin-right: 10px;'>";
+        echo "<form method='post' action='editProperties.php' style='display: inline; margin-right: 10px;'>";
           echo "<button type='submit' class='btn btn-primary'><svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-pencil' viewBox='0 0 16 16'>
           <path d='M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325'/</svg></button>";
           // Hidden input to let the page know to edit
           echo "<input type='hidden' name='edit' value='edit'>";
           // Pass necessary data to edit page
-          echo "<input type='hidden' name='ssn' value='" . encrypt($encryptionKey, $row["Agent_SSN"]) . "'>";
-          echo "<input type='hidden' name='date' value='{$row['list_date']}'>";
-          echo "<input type='hidden' name='price' value='{$row['asking_price']}'>";
           echo "<input type='hidden' name='address' value='{$row['Full_address']}'>";
         echo "</form>";
 
@@ -97,10 +97,6 @@ if(isset($_POST["delete"])) {
           </svg></button>";
           // Hidden input to let the page know to delete
           echo "<input type='hidden' name='delete' value='delete'>";
-          // Encrypted SSN to pass in post request for deletion
-          echo "<input type='hidden' name='ssn' value='" . encrypt($encryptionKey, $row["Agent_SSN"]) . "'>";
-          echo "<input type='hidden' name='date' value='{$row['list_date']}'>";
-          echo "<input type='hidden' name='price' value='{$row['asking_price']}'>";
           echo "<input type='hidden' name='address' value='{$row['Full_address']}'>";
         echo "</form>";
       echo "</td>";

@@ -42,7 +42,7 @@ if($_GET["message"]=="success") {
                                 </select>
                             </div>
                         </div>
-                        <!-- Text input-->
+                        <!-- Date input-->
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label class="control-label" for="date">Date</label>

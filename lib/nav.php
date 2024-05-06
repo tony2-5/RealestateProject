@@ -34,10 +34,19 @@
             <a class="nav-link" href="/visitScheduling/scheduledVisits.php">Scheduled Visits</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/newAgentCustomer/newAgent.php">Add Agent</a>
+            <a class="nav-link" href="/properties/viewProperties.php">View Properties</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/newAgentCustomer/newCustomer.php">Add Customer</a>
+              <div class="dropdown" style="margin-left:1vw">
+              <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Add New Customers|Agents|Property
+              </button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item" href="/newAgentCustomer/newAgent.php">New Agent</a>
+                <a class="dropdown-item" href="/newAgentCustomer/newCustomer.php">New Customer</a>
+                <a class="dropdown-item" href="/properties/newProperty.php">New Property</a>
+              </div>
+            </div>
           </li>
         </ul>
       </div>
