@@ -55,7 +55,7 @@ if(isset($_POST["delete"])) {
   </select>
   <button class="btn btn-primary mx-2 my-2 my-sm-0" type="submit">Search</button>
 </form>
-<table class="table">
+<table class="table" aria-label="Listing table">
   <thead>
     <tr>
       <th scope="col">Listing Date</th>
@@ -116,7 +116,7 @@ if(isset($_POST["delete"])) {
       $agentName = mysqli_fetch_assoc($result2);
       echo "<td> $agentName[Name] *****".substr($row["Agent_SSN"],5)."</td>";
 
-      echo "<td>$" . number_format($row['asking_price'], 2, '.', ',') . "</td>";
+      echo "<td>$".number_format($row['asking_price'], 2, '.', ',')."</td>";
       
       // Delete and edit button
       
