@@ -39,7 +39,7 @@
           <li class="nav-item">
               <div class="dropdown" style="margin-left:1vw">
               <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Add New Customers|Agents|Property
+                Add New Customer, Agent, or Property
               </button>
               <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                 <a class="dropdown-item" href="/newAgentCustomer/newAgent.php">New Agent</a>

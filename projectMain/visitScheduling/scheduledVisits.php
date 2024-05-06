@@ -30,16 +30,16 @@ if(isset($_POST["delete"])) {
 <link rel="stylesheet" href="./style.css">
 <!--drop down to change search criteria-->
 <form method='post' class="form-inline">
-  <input name="search" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-  <select name="searchCriteria" class="form-control">
-    <option selected disabled>Search Criteria</option>
+  <input name="search" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" required>
+  <select name="searchCriteria" class="form-control" required>
+    <option value="" selected disabled>Search Criteria</option>
     <option value="aName">Agent name</option>
     <option value="date">Date</option>
     <option value="time">Time</option>
     <option value="cName">Customer name</option>
     <option value="Full_address">Address</option>
   </select>
-  <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+  <button class="btn btn-primary mx-2 my-2 my-sm-0" type="submit">Search</button>
 </form>
 </div>
 <table class="table">
