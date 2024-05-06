@@ -43,6 +43,18 @@ if(isset($_POST["delete"])) {
   } 
 </script>
 <link rel="stylesheet" href="./style.css">
+<form method='post' class="form-inline">
+  <input name="search" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" required>
+  <select name="searchCriteria" class="form-control" required>
+    <option value="" selected disabled>Search Criteria</option>
+    <option value="list_date">Date of listing</option>
+    <option value="Full_address">Address</option>
+    <option value="aName">Agent name</option>
+    <option value="minAsking">Minimum asking price</option>
+    <option value="maxAsking">Maximum asking price</option>
+  </select>
+  <button class="btn btn-primary mx-2 my-2 my-sm-0" type="submit">Search</button>
+</form>
 <table class="table">
   <thead>
     <tr>
@@ -55,8 +67,42 @@ if(isset($_POST["delete"])) {
   <tbody>
     <?php
     //dynamically generate webpage
-    $query = "SELECT * FROM LISTING ORDER BY LIST_DATE DESC";
-    $result = mysqli_query($connection,$query);
+    if(isset($_POST['searchCriteria']) && ($_POST['searchCriteria']=='list_date'||$_POST['searchCriteria']=='Full_address')) {
+      // search is used on the date, time, or address field
+      $searchString="%$_POST[search]%";
+      // concatenating search criteria instead of binding param because do not need to worry about sanitizing search criteria
+      $stmt = mysqli_prepare($connection,"SELECT * FROM LISTING WHERE ".$_POST['searchCriteria']." LIKE ? ORDER BY LIST_DATE DESC");
+      mysqli_stmt_bind_param($stmt,"s",$searchString);
+      mysqli_stmt_execute($stmt); 
+      $result = mysqli_stmt_get_result($stmt);
+    } else if(isset($_POST['searchCriteria']) && $_POST['searchCriteria']=='aName'){
+      //if search is used on agent name
+      $searchString="%$_POST[search]%";
+      // concatenating search criteria instead of binding param because do not need to worry about sanitizing search criteria
+      $stmt = mysqli_prepare($connection,"SELECT * FROM LISTING l WHERE l.Agent_SSN IN 
+      (SELECT a.Agent_SSN FROM AGENT a WHERE a.Agent_SSN=l.Agent_SSN AND a.NAME LIKE ?) 
+      ORDER BY l.LIST_DATE DESC");
+      mysqli_stmt_bind_param($stmt,"s",$searchString);
+      mysqli_stmt_execute($stmt); 
+      $result = mysqli_stmt_get_result($stmt);
+    } else if(isset($_POST['searchCriteria']) && $_POST['searchCriteria']=='minAsking'){
+      $searchString="$_POST[search]";
+      $stmt = mysqli_prepare($connection,"SELECT * FROM LISTING WHERE asking_price >= ? ORDER BY list_date DESC");
+      mysqli_stmt_bind_param($stmt,"d",$searchString);
+      mysqli_stmt_execute($stmt); 
+      $result = mysqli_stmt_get_result($stmt);
+    } else if(isset($_POST['searchCriteria']) && $_POST['searchCriteria']=='maxAsking'){
+      $searchString= "$_POST[search]";
+      $stmt = mysqli_prepare($connection,"SELECT * FROM LISTING WHERE asking_price <= ? ORDER BY list_date DESC");
+      mysqli_stmt_bind_param($stmt,"d",$searchString);
+      mysqli_stmt_execute($stmt); 
+      $result = mysqli_stmt_get_result($stmt);
+    }else {
+      $query = "SELECT * FROM LISTING ORDER BY LIST_DATE";
+      $result = mysqli_query($connection,$query);
+    }
+
+    // Data fetching logic
     while($row=mysqli_fetch_assoc($result)) {
     echo "<tr>";
       echo "<td>$row[list_date]</td>";
@@ -72,7 +118,7 @@ if(isset($_POST["delete"])) {
 
       echo "<td>$" . number_format($row['asking_price'], 2, '.', ',') . "</td>";
       
-      //delete and edit button
+      // Delete and edit button
       
       // Each row of table for listings
       echo "<td>";
