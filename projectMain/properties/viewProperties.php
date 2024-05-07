@@ -45,6 +45,21 @@ if(isset($_POST["delete"])) {
   } 
 </script>
 <link rel="stylesheet" href="./style.css">
+<!--drop down to change search criteria-->
+<form method='post' class="form-inline">
+  <input name="search" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" required>
+  <select name="searchCriteria" class="form-control" required>
+    <option value="" selected disabled>Search Criteria</option>
+    <option value="Name">Owner name</option>
+    <option value="Full_address">Address</option>
+    <option value="maxTax">Max Tax</option>
+    <option value="minTax">Min Tax</option>
+    <option value="Fullbath">Full Baths</option>
+    <option value="Halfbath">Half Baths</option>
+    <option value="Bedrooms">Bedrooms</option>
+  </select>
+  <button class="btn btn-primary mx-2 my-2 my-sm-0" type="submit">Search</button>
+</form>
 <table class="table">
   <thead>
     <tr>
@@ -59,8 +74,51 @@ if(isset($_POST["delete"])) {
   <tbody>
     <?php
     //dynamically generate webpage
-    $query = "SELECT * FROM PROPERTY";
-    $result = mysqli_query($connection,$query);
+    //dynamically generate webpage
+    if(isset($_POST['searchCriteria']) && $_POST['searchCriteria']=='Full_address') {
+      // search is used on the address field
+      $searchString="%$_POST[search]%";
+      // concatenating search criteria instead of binding param because do not need to worry about sanitizing search criteria
+      $stmt = mysqli_prepare($connection,"SELECT * FROM PROPERTY WHERE ".$_POST['searchCriteria']." LIKE ?");
+      mysqli_stmt_bind_param($stmt,"s",$searchString);
+      mysqli_stmt_execute($stmt); 
+      $result = mysqli_stmt_get_result($stmt);
+    } else if(isset($_POST['searchCriteria']) && $_POST['searchCriteria']=='Name'){
+      //if search is used on owner name
+      $searchString="%$_POST[search]%";
+      // concatenating search criteria instead of binding param because do not need to worry about sanitizing search criteria
+      $stmt = mysqli_prepare($connection,"SELECT * FROM PROPERTY WHERE Full_address IN 
+      (SELECT Full_address FROM OWNS WHERE Owner_SSN IN (SELECT Owner_SSN FROM OWNER WHERE ".$_POST['searchCriteria']." LIKE ?))");
+      mysqli_stmt_bind_param($stmt,"s",$searchString);
+      mysqli_stmt_execute($stmt); 
+      $result = mysqli_stmt_get_result($stmt);
+    } else if(isset($_POST['searchCriteria']) && ($_POST['searchCriteria']=='Fullbath' || $_POST['searchCriteria']=='Halfbath' || $_POST['searchCriteria']=='Bedrooms')) {
+      //search on full baths, half baths, or bedrooms (numeric inputs)
+      $searchString="$_POST[search]";
+      // concatenating search criteria instead of binding param because do not need to worry about sanitizing search criteria
+      $stmt = mysqli_prepare($connection,"SELECT * FROM PROPERTY WHERE ".$_POST['searchCriteria']." LIKE ?");
+      mysqli_stmt_bind_param($stmt,"d",$searchString);
+      mysqli_stmt_execute($stmt); 
+      $result = mysqli_stmt_get_result($stmt);
+    } 
+    else if(isset($_POST['searchCriteria']) && $_POST['searchCriteria']=='minTax'){
+      $searchString="$_POST[search]";
+      $stmt = mysqli_prepare($connection,"SELECT * FROM PROPERTY WHERE Tax >= ?");
+      mysqli_stmt_bind_param($stmt,"d",$searchString);
+      mysqli_stmt_execute($stmt); 
+      $result = mysqli_stmt_get_result($stmt);
+    } else if(isset($_POST['searchCriteria']) && $_POST['searchCriteria']=='maxTax'){
+      $searchString= "$_POST[search]";
+      $stmt = mysqli_prepare($connection,"SELECT * FROM PROPERTY WHERE Tax <= ?");
+      mysqli_stmt_bind_param($stmt,"d",$searchString);
+      mysqli_stmt_execute($stmt); 
+      $result = mysqli_stmt_get_result($stmt);
+    }else {
+      $query = "SELECT * FROM PROPERTY";
+      $result = mysqli_query($connection,$query);
+    }
+
+    //data fetching 
     while($row=mysqli_fetch_assoc($result)) {
     echo "<tr>";
       // get name from customer table

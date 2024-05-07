@@ -68,7 +68,7 @@ if(isset($_POST["delete"])) {
     <?php
     //dynamically generate webpage
     if(isset($_POST['searchCriteria']) && ($_POST['searchCriteria']=='list_date'||$_POST['searchCriteria']=='Full_address')) {
-      // search is used on the date, time, or address field
+      // search is used on the date or address field
       $searchString="%$_POST[search]%";
       // concatenating search criteria instead of binding param because do not need to worry about sanitizing search criteria
       $stmt = mysqli_prepare($connection,"SELECT * FROM LISTING WHERE ".$_POST['searchCriteria']." LIKE ? ORDER BY LIST_DATE DESC");
