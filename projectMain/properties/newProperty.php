@@ -44,7 +44,7 @@ if(isset($_GET["message"])) {
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="control-label" for="tax">Tax</label>
-                            <input id="tax" name="tax" type="number" class="form-control input-md" required>
+                            <input id="tax" name="tax" type="number" step=".01" class="form-control input-md" required>
                         </div>
                     </div>
                     <!-- Numeric inputs-->
@@ -110,6 +110,11 @@ if(isset($_GET["message"])) {
         // disable the other extra form fields
         document.getElementById('cExtra').style.display = 'none';
         document.getElementById('aExtra').style.display = 'none';
+        document.getElementById('aFloors').disabled = true;
+        document.getElementById('securityDeposit').disabled = true;
+        document.getElementById('units').disabled = true;
+        document.getElementById('cFloors').disabled = true;
+        document.getElementById('fees').disabled = true;
 
         document.getElementById('hExtra').style.display = '';
         document.getElementById('style').disabled = false;
@@ -117,6 +122,10 @@ if(isset($_GET["message"])) {
         // disable the other extra form fields
         document.getElementById('hExtra').style.display = 'none';
         document.getElementById('cExtra').style.display = 'none';
+        document.getElementById('style').disabled = true;
+        document.getElementById('units').disabled = true;
+        document.getElementById('cFloors').disabled = true;
+        document.getElementById('fees').disabled = true;
 
         document.getElementById('aExtra').style.display = '';
         document.getElementById('aFloors').disabled = false;
@@ -125,7 +134,10 @@ if(isset($_GET["message"])) {
         // disable the other extra form fields
         document.getElementById('hExtra').style.display = 'none';
         document.getElementById('aExtra').style.display = 'none';
-
+        document.getElementById('style').disabled = true;
+        document.getElementById('aFloors').disabled = true;
+        document.getElementById('securityDeposit').disabled = true;
+        
         document.getElementById('cExtra').style.display = '';
         document.getElementById('units').disabled = false;
         document.getElementById('cFloors').disabled = false;
